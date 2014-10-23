@@ -1,0 +1,11 @@
+{
+    "name": "royteusink/plug-query",
+    "description": "PHP Query",
+    "authors": [
+        {
+            "name": "Roy Teusink",
+            "email": "royteusink@gmail.com"
+        }
+    ],
+    "require": {}
+}
