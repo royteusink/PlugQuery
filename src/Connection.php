@@ -2,7 +2,9 @@
 
 namespace PlugQuery;
 
-abstract class Connection extends \PDO {
+use \PDO as PDO;
+
+abstract class Connection extends PDO {
 
 	public abstract function getDSN();
 
