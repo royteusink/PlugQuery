@@ -2,3 +2,4 @@ vendor
 #tests
 docs
 ._*
+composer.lock
