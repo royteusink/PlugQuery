@@ -17,78 +17,41 @@ abstract class Method {
 		return $this->toSql();
 	}
 
-	public function find() {
+	private function prepareExecute() {
 
 		$dbh = Manager::getInstance()->getActive();
 		$sth = $dbh->prepare($this->toSql());
+		$index = 1;
 
-		$i = 1;
-		if($this->wheres) {
-			foreach($this->wheres as $index => $where) {
-				$type = Connection::PARAM_STR;
-				if(is_int($where['value'])) {
-					$type = Connection::PARAM_INT;
-				}
-				$sth->bindValue($i, $where['value'], $type);
-				$i++;
+		if($this->data) {
+			foreach($this->data as $value) {
+				$sth->bindParam($index, $value);
+				$index++;
 			}
 		}
 
+		if($this->wheres) {
+			foreach($this->wheres as $item) {
+				$sth->bindParam($index, $item->value);
+				$index++;
+			}
+		}		
+		
 		$sth->execute();
-		return $sth->fetchAll();
+		return $sth;
+	}
 
+	public function find() {
+		return $this->prepareExecute()->fetchAll();
 	}
 
 	public function findOne() {
-
-		$dbh = Manager::getInstance()->getActive();
-		$sth = $dbh->prepare($this->toSql());
-
-		$i = 1;
-		if($this->wheres) {
-			foreach($this->wheres as $index => $where) {
-				$type = Connection::PARAM_STR;
-				if(is_int($where['value'])) {
-					$type = Connection::PARAM_INT;
-				}
-				$sth->bindValue($i, $where['value'], $type);
-				$i++;
-			}
-		}
-
-		$sth->execute();
-		return $sth->fetch();
-
+		return $this->prepareExecute()->fetch();
 	}
 
 	public function execute() {
+		$this->prepareExecute();
 		$dbh = Manager::getInstance()->getActive();
-		$sth = $dbh->prepare($this->toSql());
-
-		$i = 1;
-		if($this->data) {
-			foreach($this->data as $index => $value) {
-				$type = Connection::PARAM_STR;
-				if(is_int($where['value'])) {
-					$type = Connection::PARAM_INT;
-				}
-				$sth->bindValue($i, $value, $type);
-				$i++;
-			}
-		}
-
-		if($this->wheres) {
-			foreach($this->wheres as $index => $where) {
-				$type = Connection::PARAM_STR;
-				if(is_int($where['value'])) {
-					$type = Connection::PARAM_INT;
-				}
-				$sth->bindValue($i, $where['value'], $type);
-				$i++;
-			}
-		}
-
-		$sth->execute();
 		return $dbh->lastInsertId();
 	}
 

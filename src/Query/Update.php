@@ -5,8 +5,6 @@ namespace PlugQuery\Query;
 use PlugQuery\Query;
 use PlugQuery\Query\Method as QueryMethod;
 
-// treat PlugQuery\Query\Parts\Where;
-
 class Update extends QueryMethod {
 
 	public $table;
@@ -19,19 +17,23 @@ class Update extends QueryMethod {
 		return $this;
 	}
 
+	protected function baseWhere($column, $value, $permutation, $operator) {
+		$where = new \StdClass;
+		$where->column = $column;
+		$where->permutation = $permutation;
+		$where->operator = $operator;
+		$where->value = $value;
+		return $where;
+	}
+
 	public function where($column, $value) {
-		$this->wheres[] = array(
-			'column' => $column,
-			'permutation' => Query::PERMUTATION_EQUAL,
-			'value' => $value
-		);
+		$this->wheres[] = $this->baseWhere($column, $value, Query::PERMUTATION_EQUAL, Query::BOOLEAN_AND);
 		return $this;
 	}
 
-	// public function whereLess() {}
-	// public function whereMore() {}
-	// public function whereLessOrEqual() {}
-	// public function whereMoreOrEqual() {}
-	// public function whereNot() {}
+	public function orWhere($column, $value) {
+		$this->wheres[] = $this->baseWhere($column, $value, Query::PERMUTATION_EQUAL, Query::BOOLEAN_OR);
+		return $this;
+	}
 
 }

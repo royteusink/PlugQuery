@@ -61,8 +61,16 @@ class Model implements \Iterator {
 		return $results;
 	}
 
+	protected function hasOne($table) {
+		$result = Query::select($table, $this->values["{$table}_id"])->findOne();
+		$object = new $table;
+		$object->values = $result;
+		$this->values[$table] = $object;
+		return $this;
+	}
+
 	public function __get($name) {
-		return $this->values[$name];
+		if(isset($this->values[$name])) return $this->values[$name];
 	}
 
 	public function __set($name, $value) {
