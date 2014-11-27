@@ -284,7 +284,7 @@ class Builder {
 	 */
 	protected function processHaving($query) {
 		if(!empty($query->having)) {
-			throw new Exception("TODO: HAVING");
+			throw new \Exception("TODO: HAVING");
 		}
 		return null;
 	}
