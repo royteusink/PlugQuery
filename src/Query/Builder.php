@@ -217,6 +217,10 @@ class Builder {
 					case Query::PERMUTATION_NOTLIKE:
 						$permutation = "NOT LIKE";
 						break;
+					case Query::PERMUTATION_BETWEEN:
+						$permutation = "BETWEEN";
+						$value = "? AND ?";
+						break;
 					case Query::PERMUTATION_IN:
 						$permutation = "IN";
 						$value = "(" . join(', ', array_fill(1, count($item->value), '?')) . ")";

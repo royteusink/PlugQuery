@@ -144,6 +144,12 @@ class QueryTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals("SELECT account.* FROM account WHERE account.name NOT LIKE ?", $query->toSql());
 	}
 
+	public function testSelectWhereBetween() {
+		$query = Query::select('stats')->whereBetween('visits', 3, 10);
+		echo "\n" . $query->toSql();
+		$this->assertEquals("SELECT stats.* FROM stats WHERE stats.visits BETWEEN ? AND ?", $query->toSql());
+	}
+
 	public function testInsert() {
 		$query = Query::insert('account', array('username' => 'a'));
 		echo "\n" . $query->toSql();
