@@ -147,7 +147,7 @@ class Builder {
 			}
 		}
 		
-		$output  = "SELECT ";
+		$output  = "SELECT " . ($query->distinct ? "DISTINCT " : "");
 		$output .= implode(", ", $columns);
 		$output .= " FROM {$query->table}";
 
@@ -155,12 +155,13 @@ class Builder {
 	}
 
 	/**
-	 * WHERE a = ?
-	 * WHERE a = ? AND b = ?
-	 * WHERE a = ? OR b = ?
-	 * WHERE a = ? AND b = ? OR c < 1
-	 * WHERE a IS NOT NULL
+	 * WHERE t1.a = ?
+	 * WHERE t1.a = ? AND t1.b = ?
+	 * WHERE t1.a = ? OR t1.b = ?
+	 * WHERE t1.a = ? AND t1.b = ? OR t1.c < 1
+	 * WHERE t1.a IS NOT NULL
 	 * WHERE t1.a = ? AND t2.b = ?
+	 * WHERE t1.a BETWEEN ? AND ?
 	 */
 	protected function processWheres($query) {
 		if(!empty($query->wheres)) {

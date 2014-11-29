@@ -14,78 +14,94 @@ class Select extends QueryMethod {
 	public $orders = array();
 	public $limit;
 	public $groupby = array();
+	public $distinct = false;
+	public $operator = Query::BOOLEAN_AND;
 
 	public function table($table, $columns = null) {
 		$this->table = $table;
-		$this->columns = $columns == null ? array() : $columns;
+		$this->columns = is_null($columns) ? array() : $columns;
 		return $this;
 	}
 
-	protected function baseWhere($column, $value, $permutation, $operator) {
+	public function __get($name) {
+		if($name == 'or') {
+			$this->operator = Query::BOOLEAN_OR;
+			return $this;
+		}
+	}
+
+	protected function baseWhere($column, $value, $permutation) {
 		$where = new \StdClass;
 		$where->column = $column;
 		$where->permutation = $permutation;
-		$where->operator = $operator;
+		$where->operator = $this->operator;
 		$where->value = $value;
+
+		// reset operator to AND
+		$this->operator = Query::BOOLEAN_AND;
+
 		return $where;
 	}
 
 	public function where($column, $value) {
-		$this->wheres[] = $this->baseWhere($column, $value, Query::PERMUTATION_EQUAL, Query::BOOLEAN_AND);
+		$this->wheres[] = $this->baseWhere($column, $value, Query::PERMUTATION_EQUAL);
+		return $this;
+	}
+
+	public function whereLess($column, $value) {
+		$this->wheres[] = $this->baseWhere($column, $value, Query::PERMUTATION_LESS);
+		return $this;
+	}
+
+	public function whereMore($column, $value) {
+		$this->wheres[] = $this->baseWhere($column, $value, Query::PERMUTATION_MORE);
 		return $this;
 	}
 
 	public function whereNot($column, $value) {
-		$this->wheres[] = $this->baseWhere($column, $value, Query::PERMUTATION_NOTEQUAL, Query::BOOLEAN_AND);
+		$this->wheres[] = $this->baseWhere($column, $value, Query::PERMUTATION_NOTEQUAL);
 		return $this;
 	}
 
-	public function orWhere($column, $value) {
-		$this->wheres[] = $this->baseWhere($column, $value, Query::PERMUTATION_EQUAL, Query::BOOLEAN_OR);
+	public function whereLessEqual($column, $value) {
+		$this->wheres[] = $this->baseWhere($column, $value, Query::PERMUTATION_LESSEQUAL);
+		return $this;
+	}
+
+	public function whereMoreEqual($column, $value) {
+		$this->wheres[] = $this->baseWhere($column, $value, Query::PERMUTATION_MOREEQUAL);
 		return $this;
 	}
 
 	public function whereIn($column, $value) {
-		$this->wheres[] = $this->baseWhere($column, $value, Query::PERMUTATION_IN, Query::BOOLEAN_AND);
-		return $this;
-	}
-
-	public function orWhereIn($column, $value) {
-		$this->wheres[] = $this->baseWhere($column, $value, Query::PERMUTATION_IN, Query::BOOLEAN_OR);
+		$this->wheres[] = $this->baseWhere($column, $value, Query::PERMUTATION_IN);
 		return $this;
 	}
 
 	public function wherelike($column, $value) {
-		$this->wheres[] = $this->baseWhere($column, $value, Query::PERMUTATION_LIKE, Query::BOOLEAN_AND);
+		$this->wheres[] = $this->baseWhere($column, $value, Query::PERMUTATION_LIKE);
 		return $this;
 	}
 
 	public function whereNotLike($column, $value) {
-		$this->wheres[] = $this->baseWhere($column, $value, Query::PERMUTATION_NOTLIKE, Query::BOOLEAN_AND);
+		$this->wheres[] = $this->baseWhere($column, $value, Query::PERMUTATION_NOTLIKE);
 		return $this;
 	}
 
 	public function whereBetween($column, $from, $to) {
-		$this->wheres[] = $this->baseWhere($column, array($from, $to), Query::PERMUTATION_BETWEEN, Query::BOOLEAN_AND);
+		$this->wheres[] = $this->baseWhere($column, array($from, $to), Query::PERMUTATION_BETWEEN);
 		return $this;
 	}
 
 	public function whereNotBetween($column, $from, $to) {
-		$this->wheres[] = $this->baseWhere($column, array($from, $to), Query::PERMUTATION_NOTBETWEEN, Query::BOOLEAN_AND);
+		$this->wheres[] = $this->baseWhere($column, array($from, $to), Query::PERMUTATION_NOTBETWEEN);
 		return $this;
 	}
 
-	/*
-	public function orWherelike($column, $value) {
-		$this->wheres[] = $this->baseWhere($column, $value, Query::PERMUTATION_LIKE, Query::BOOLEAN_OR);
+	public function distinct() {
+		$this->distinct = true;
 		return $this;
 	}
-
-	public function orWhereNotLike($column, $value) {
-		$this->wheres[] = $this->baseWhere($column, $value, Query::PERMUTATION_NOTLIKE, Query::BOOLEAN_OR);
-		return $this;
-	}
-	*/
 
 	public function orderBy($column, $direction) {
 		$order = new \StdClass;

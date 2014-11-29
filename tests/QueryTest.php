@@ -12,6 +12,18 @@ class QueryTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals("SELECT account.* FROM account", $query->toSql());
 	}
 
+	public function testSelectWhereOrs() {
+		$query = Query::select('account')->where('username', 'admin')->or->where('username','visitor')->where('role_id', 1);
+		echo "\n" . $query->toSql();
+		$this->assertEquals("SELECT account.* FROM account WHERE account.username = ? OR account.username = ? AND account.role_id = ?", $query->toSql());
+	}
+
+	public function testSelectDistinct() {
+		$query = Query::select('customer', array('city'))->distinct();
+		echo "\n" . $query->toSql();
+		$this->assertEquals("SELECT DISTINCT customer.city FROM customer", $query->toSql());
+	}
+
 	public function testSelectById() {
 		$query = Query::select('account', 1);
 		echo "\n" . $query->toSql();
@@ -49,7 +61,7 @@ class QueryTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testSelectOrWhereMultiple() {
-		$query = Query::select('account')->where('id', 1)->orWhere('username', 'test');
+		$query = Query::select('account')->where('id', 1)->or->where('username', 'test');
 		echo "\n" . $query->toSql();
 		$this->assertEquals("SELECT account.* FROM account WHERE account.id = ? OR account.username = ?", $query->toSql());
 	}
@@ -127,7 +139,7 @@ class QueryTest extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testSelectOrWhereIn() {
-		$query = Query::select('stats')->where('times', 1)->orWhereIn('source', array('visitors'));
+		$query = Query::select('stats')->where('times', 1)->or->whereIn('source', array('visitors'));
 		echo "\n" . $query->toSql();
 		$this->assertEquals("SELECT stats.* FROM stats WHERE stats.times = ? OR stats.source IN (?)", $query->toSql());
 	}
