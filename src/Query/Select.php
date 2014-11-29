@@ -70,6 +70,11 @@ class Select extends QueryMethod {
 		return $this;
 	}
 
+	public function whereNotBetween($column, $from, $to) {
+		$this->wheres[] = $this->baseWhere($column, array($from, $to), Query::PERMUTATION_NOTBETWEEN, Query::BOOLEAN_AND);
+		return $this;
+	}
+
 	/*
 	public function orWherelike($column, $value) {
 		$this->wheres[] = $this->baseWhere($column, $value, Query::PERMUTATION_LIKE, Query::BOOLEAN_OR);

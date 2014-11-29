@@ -150,6 +150,12 @@ class QueryTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals("SELECT stats.* FROM stats WHERE stats.visits BETWEEN ? AND ?", $query->toSql());
 	}
 
+	public function testSelectWhereNotBetween() {
+		$query = Query::select('stats')->whereNotBetween('visits', 3, 10);
+		echo "\n" . $query->toSql();
+		$this->assertEquals("SELECT stats.* FROM stats WHERE stats.visits NOT BETWEEN ? AND ?", $query->toSql());
+	}
+
 	public function testInsert() {
 		$query = Query::insert('account', array('username' => 'a'));
 		echo "\n" . $query->toSql();
