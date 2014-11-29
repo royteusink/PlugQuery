@@ -79,22 +79,15 @@ class Builder {
 
 	protected function buildCreateQuery(Create $query) {
 
+		if(empty($query->columns)) throw new \Exception("create requires at least one column.");
+
 		$processes = array_filter(array(
-			"CREATE TABLE {$query->table} (",
+			"CREATE TABLE IF NOT EXISTS {$query->table} (",
 			$this->processColumns($query),
 			")"
 		));
 
 		return implode(" ", $processes);
-	}
-
-	protected function processColumns($query) {
-
-		$columns = array_map(function($column) {
-			return "{$column->name} {$column->type}({$column->size})";
-		}, $query->columns);
-		
-		return implode(", ", $columns);
 	}
 
 	protected function buildSelectQuery(Select $query) {
@@ -113,19 +106,49 @@ class Builder {
 	}
 
 	/**
+	 * Used for create table
+	 * name varchar(200)
+	 */
+	protected function processColumns($query) {
+
+		$columns = array_map(function($column) {
+			return "{$column->name} {$column->type}({$column->size})";
+		}, $query->columns);
+
+		array_unshift($columns, "id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT");
+		
+		return implode(", ", $columns);
+	}
+
+	/**
 	 * SELECT t1.* FROM t1
-	 * SELECT t1.*, t2.* FROM t1
+	 * SELECT t1.*, j1.*, j2.* FROM t1
+	 * SELECT t1.id, t1.name, j1.id, j1.name, j2.id FROM t1
 	 */
 	protected function processSelects($query) {
 
-		$jointables = array_map(function($join) {
-			return "{$join->table}.*";
-		}, $query->joins);
+		$columns = array();
 
-		array_unshift($jointables, "{$query->table}.*");
+		if(empty($query->columns)) {
+			$columns[] = "{$query->table}.*";
+		} else {
+			foreach($query->columns as $column) {
+				$columns[] = "{$query->table}.{$column}";
+			}
+		}
+
+		foreach($query->joins as $join) {
+			if(empty($join->columns)) {
+				$columns[] = "{$join->table}.*";
+			} else {
+				foreach($join->columns as $column) {
+					$columns[] = "{$join->table}.{$column}";
+				}
+			}
+		}
 		
 		$output  = "SELECT ";
-		$output .= implode(", ", $jointables);
+		$output .= implode(", ", $columns);
 		$output .= " FROM {$query->table}";
 
 		return $output;

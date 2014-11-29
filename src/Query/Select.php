@@ -8,14 +8,16 @@ use PlugQuery\Query\Method as QueryMethod;
 class Select extends QueryMethod {
 
 	public $table;
+	public $columns = array();
 	public $joins = array();
 	public $wheres = array();
 	public $orders = array();
 	public $limit;
 	public $groupby = array();
 
-	public function table($table) {
+	public function table($table, $columns = null) {
 		$this->table = $table;
+		$this->columns = $columns == null ? array() : $columns;
 		return $this;
 	}
 
@@ -82,10 +84,11 @@ class Select extends QueryMethod {
 		return $this;
 	}
 
-	public function join($table) {
+	public function join($table, $columns = null) {
 		$join = new \StdClass;
 		$join->table = $table;
 		$join->direction = 'left';
+		$join->columns = $columns;
 		$this->joins[] = $join;
 		return $this;
 	}

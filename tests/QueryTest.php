@@ -78,6 +78,18 @@ class QueryTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals("SELECT account.*, role.* FROM account LEFT JOIN role ON account.role_id = role.id", $query->toSql());
 	}
 
+	public function testSelectWithJoinSpecified() {
+		$query = Query::select('account', array('id', 'username', 'password'))->join('role', array('id', 'name'));
+		echo "\n" . $query->toSql();
+		$this->assertEquals("SELECT account.id, account.username, account.password, role.id, role.name FROM account LEFT JOIN role ON account.role_id = role.id", $query->toSql());
+	}
+
+	public function testSelectWithJoinSpecifiedId() {
+		$query = Query::select('account', array('id', 'username', 'password'), 22)->join('role', array('id', 'name'));
+		echo "\n" . $query->toSql();
+		$this->assertEquals("SELECT account.id, account.username, account.password, role.id, role.name FROM account LEFT JOIN role ON account.role_id = role.id WHERE account.id = ?", $query->toSql());
+	}
+
 	public function testSelectWithJoinWhere() {
 		$query = Query::select('account')->join('role')->where('role.name', 'admin');
 		echo "\n" . $query->toSql();
@@ -171,7 +183,7 @@ class QueryTest extends PHPUnit_Framework_TestCase {
 	public function testCreateTable() {
 		$query = Query::create('account')->addColumn('username', 'varchar', 255)->addColumn('password', 'varchar', 255);
 		echo "\n" . $query->toSql();
-		$this->assertEquals("CREATE TABLE account ( username varchar(255), password varchar(255) )", $query->toSql());
+		$this->assertEquals("CREATE TABLE IF NOT EXISTS account ( id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT, username varchar(255), password varchar(255) )", $query->toSql());
 	}
 
 }

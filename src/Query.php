@@ -23,10 +23,23 @@ class Query {
 	const PERMUTATION_LIKE = 8;
 	const PERMUTATION_NOTLIKE = 9;
 
-	public static function select($table, $id = null) {
+	// (string) = $table
+	// (string, int) = $table, $id
+	// (string, array) = $table, $columns
+	// (string, array, int) = $table, $columns, $id
+	public static function select($table, $arg1 = null, $arg2 = null) {
 		$select = new Select();
-		$select->table($table);
+		
+		$id = null;
+		$columns = null;
+
+		if(is_int($arg1)) $id = $arg1;
+		if(is_int($arg2)) $id = $arg2;
+		if(is_array($arg1)) $columns = $arg1;
+
+		$select->table($table, $columns);
 		if($id) $select->where('id', $id);
+
 		return $select;
 	}
 
