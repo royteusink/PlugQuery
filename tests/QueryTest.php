@@ -41,6 +41,34 @@ class QueryTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(array(1), $query->getValues());
 	}
 
+	public function testSelectWhereLess() {
+		$query = Query::select('account')->whereLess('visits', 10);
+		echo "\n" . $query->toSql();
+		$this->assertEquals("SELECT account.* FROM account WHERE account.visits < ?", $query->toSql());
+		$this->assertEquals(array(10), $query->getValues());
+	}
+
+	public function testSelectWhereMore() {
+		$query = Query::select('account')->whereMore('visits', 10);
+		echo "\n" . $query->toSql();
+		$this->assertEquals("SELECT account.* FROM account WHERE account.visits > ?", $query->toSql());
+		$this->assertEquals(array(10), $query->getValues());
+	}
+
+	public function testSelectWhereLessEqual() {
+		$query = Query::select('account')->whereLessEqual('visits', 10);
+		echo "\n" . $query->toSql();
+		$this->assertEquals("SELECT account.* FROM account WHERE account.visits <= ?", $query->toSql());
+		$this->assertEquals(array(10), $query->getValues());
+	}
+
+	public function testSelectWhereMoreEqual() {
+		$query = Query::select('account')->whereMoreEqual('visits', 10);
+		echo "\n" . $query->toSql();
+		$this->assertEquals("SELECT account.* FROM account WHERE account.visits >= ?", $query->toSql());
+		$this->assertEquals(array(10), $query->getValues());
+	}
+
 	public function testSelectWhereNot() {
 		$query = Query::select('account')->whereNot('id', 1);
 		echo "\n" . $query->toSql();
