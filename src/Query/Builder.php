@@ -178,7 +178,8 @@ class Builder {
 
 				// determine is data is nullable
 				$is_null = is_null($item->value);
-				$value = $is_null ? "NULL" : "?";
+				$value = "?";
+				//$value = $is_null ? "NULL" : "?";
 
 				// add operator, but not before the first statement
 				if($index > 0) {
@@ -265,7 +266,8 @@ class Builder {
 		if(!empty($query->joins)) {
 			$statement = array();
 			foreach($query->joins as $item) {
-				$statement[] = "LEFT JOIN {$item->table} ON {$query->table}.{$item->table}_id = {$item->table}.id";
+				$on = is_null($item->on) ? $query->table : $item->on;
+				$statement[] = "LEFT JOIN {$item->table} ON {$on}.{$item->table}_id = {$item->table}.id";
 			}
 			return implode(" ", $statement);
 		}

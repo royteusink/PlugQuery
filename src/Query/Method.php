@@ -17,25 +17,39 @@ abstract class Method {
 		return $this->toSql();
 	}
 
-	private function prepareExecute() {
+	public function getValues() {
 
-		$dbh = Manager::getInstance()->getActive();
-		$sth = $dbh->prepare($this->toSql());
-		$index = 1;
+		$values = array();
 
 		if($this->data) {
 			foreach($this->data as $value) {
-				$sth->bindParam($index, $value);
-				$index++;
+				$values[] = $value;
 			}
 		}
 
 		if($this->wheres) {
 			foreach($this->wheres as $item) {
-				$sth->bindParam($index, $item->value);
-				$index++;
+				if(is_array($item->value)) {
+					foreach ($item->value as $value) {
+						$values[] = $value;
+					}
+				} else {
+					$values[] = $item->value;
+				}
 			}
-		}		
+		}
+
+		return $values;
+	}
+
+	private function prepareExecute() {
+
+		$dbh = Manager::getInstance()->getActive();
+		$sth = $dbh->prepare($this->toSql());
+		
+		foreach($this->getValues as $index => $value) {
+			$sth->bindParam($index + 1, $value);
+		}
 		
 		$sth->execute();
 		return $sth;

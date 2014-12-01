@@ -111,9 +111,22 @@ class Select extends QueryMethod {
 		return $this;
 	}
 
-	public function join($table, $columns = null) {
+	// (string) = $table
+	// (string, string) = $table, $on
+	// (string, array) = $table, $columns
+	// (string, string, array) = $table, $on, $columns
+	public function join($table, $arg1 = null, $arg2 = null) {
+
+		$on = null;
+		$columns = null;
+
+		if(is_string($arg1)) $on = $arg1;
+		if(is_array($arg1)) $columns = $arg1;
+		if(is_array($arg2)) $columns = $arg2;
+
 		$join = new \StdClass;
 		$join->table = $table;
+		$join->on = $on;
 		$join->direction = 'left';
 		$join->columns = $columns;
 		$this->joins[] = $join;
@@ -122,8 +135,8 @@ class Select extends QueryMethod {
 
 	public function limit($start, $count = null) {
 		$limit = new \StdClass;
-		$limit->start = $start;
-		$limit->count = $count;
+		$limit->start = (int) $start;
+		$limit->count = (int) $count;
 		$this->limit = $limit;
 		return $this;
 	}
