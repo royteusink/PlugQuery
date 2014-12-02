@@ -24,6 +24,7 @@ class Query {
 	const PERMUTATION_NOTLIKE = 9;
 	const PERMUTATION_BETWEEN = 10;
 	const PERMUTATION_NOTBETWEEN = 11;
+	const PERMUTATION_REGEXP = 12;
 
 	// (string) = $table
 	// (string, int) = $table, $id

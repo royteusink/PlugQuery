@@ -72,7 +72,7 @@ class QueryTest extends PHPUnit_Framework_TestCase {
 	public function testSelectWhereNot() {
 		$query = Query::select('account')->whereNot('id', 1);
 		echo "\n" . $query->toSql();
-		$this->assertEquals("SELECT account.* FROM account WHERE account.id <> ?", $query->toSql());
+		$this->assertEquals("SELECT account.* FROM account WHERE account.id != ?", $query->toSql());
 		$this->assertEquals(array(1), $query->getValues());
 	}
 
@@ -88,6 +88,13 @@ class QueryTest extends PHPUnit_Framework_TestCase {
 		echo "\n" . $query->toSql();
 		$this->assertEquals("SELECT account.* FROM account WHERE account.username IS NOT ?", $query->toSql());
 		$this->assertEquals(array(null), $query->getValues());
+	}
+
+	public function testSelectWhereExpression() {
+		$query = Query::select('account')->whereExp('username', '^te');
+		echo "\n" . $query->toSql();
+		$this->assertEquals("SELECT account.* FROM account WHERE account.username REGEXP ?", $query->toSql());
+		$this->assertEquals(array('^te'), $query->getValues());
 	}
 
 	public function testSelectWhereMultiple() {

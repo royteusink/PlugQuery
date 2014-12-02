@@ -98,6 +98,11 @@ class Select extends QueryMethod {
 		return $this;
 	}
 
+	public function whereExp($column, $value) {
+		$this->wheres[] = $this->baseWhere($column, $value, Query::PERMUTATION_REGEXP);
+		return $this;
+	}
+
 	public function distinct() {
 		$this->distinct = true;
 		return $this;

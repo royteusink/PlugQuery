@@ -199,7 +199,7 @@ class Builder {
 						$permutation = $is_null ? "IS" : "=";
 						break;
 					case Query::PERMUTATION_NOTEQUAL:
-						$permutation = $is_null ? "IS NOT" : "<>";
+						$permutation = $is_null ? "IS NOT" : "!=";
 						break;
 					case Query::PERMUTATION_LESS:
 						$permutation = "<";
@@ -230,6 +230,9 @@ class Builder {
 					case Query::PERMUTATION_IN:
 						$permutation = "IN";
 						$value = "(" . join(', ', array_fill(1, count($item->value), '?')) . ")";
+						break;
+					case Query::PERMUTATION_REGEXP:
+						$permutation = 'REGEXP';
 						break;
 				}
 
